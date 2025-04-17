@@ -1,0 +1,53 @@
+import pandas as pd
+import numpy as np
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report, accuracy_score
+
+df = pd.read_csv('stock_prices_10yr_all_companies.csv', skiprows=[1])  # assuming row 1 is 'Ticker' row, and row 2 is headers
+
+df.columns = df.iloc[0]
+df = df[1:]
+df.rename(columns={df.columns[0]: "Date"}, inplace=True)
+df['Date'] = pd.to_datetime(df['Date'])
+
+tickers = df.columns[1:].unique().tolist()
+long_df = pd.melt(df, id_vars=["Date"], value_vars=tickers, var_name="Variable", value_name="Value")
+
+long_df[['Column', 'Ticker']] = long_df['Variable'].str.extract(r'(Close|Open|High|Low|Volume)?(?:,)?(.*)')
+long_df.drop(columns=["Variable"], inplace=True)
+
+pivot_df = long_df.pivot_table(index=["Date", "Ticker"], columns="Column", values="Value", aggfunc='first').reset_index()
+
+for col in ["Open", "Close", "High", "Low", "Volume"]:
+    pivot_df[col] = pd.to_numeric(pivot_df[col], errors='coerce')
+
+pivot_df["Month"] = pivot_df["Date"].dt.to_period("M")
+monthly_df = pivot_df.groupby(["Ticker", "Month"]).agg({
+    "Open": "mean",
+    "Close": "mean",
+    "High": "mean",
+    "Low": "mean",
+    "Volume": "mean"
+}).reset_index()
+
+monthly_df.sort_values(by=["Ticker", "Month"], inplace=True)
+monthly_df["Next_Close"] = monthly_df.groupby("Ticker")["Close"].shift(-1)
+monthly_df["Target"] = (monthly_df["Next_Close"] > monthly_df["Close"]).astype(int)
+monthly_df.dropna(inplace=True)
+
+features = monthly_df[["Open", "High", "Low", "Close", "Volume"]]
+labels = monthly_df["Target"]
+
+
+
+
+
+X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=42)
+
+model = LogisticRegression(max_iter=1000)
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+print("Accuracy:", accuracy_score(y_test, y_pred))
+print(classification_report(y_test, y_pred))
