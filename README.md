@@ -20,4 +20,4 @@ Go to https://fred.stlouisfed.org/series/UNRATE and download a 10 year csv file 
 Run all three cells in logistic_regression.ipynb
 
 # LINEAR REGRESSION
-Run CX4240 Final Project Linear Regression
+Run CX4240 Final Project Linear Regression. Change the ticker label on line 11 in the 3rd cell to different ticker labels to see predictions and actual values for the companies used in dataLoading.ipynb. 
