@@ -64,12 +64,70 @@ def predict_stock_movement(ticker_symbol, n_estimators=200, min_samples_split=10
         "predictions": predictions
     }
 
+def generate_trade_signals(predictions_df):
+    decisions = predictions_df.copy()
+    decisions["Signal"] = decisions["Predictions"].apply(lambda x: "Buy" if x == 1 else "Sell/Hold")
+    return decisions[["Predictions", "Target", "Signal"]]
 
-# Run the stock prediction function
+import matplotlib.pyplot as plt
+
+def plot_predictions(predictions_df, stock_data, signal_interval=5):
+    signals = predictions_df.copy()
+    signals["Close"] = stock_data.loc[signals.index, "Close"]
+
+    plt.figure(figsize=(14, 6))
+    plt.plot(signals.index, signals["Close"], label="Stock Price", linewidth=2)
+
+    # Sample every Nth signal for clarity
+    buy_signals = signals[signals["Predictions"] == 1].iloc[::signal_interval]
+    sell_signals = signals[signals["Predictions"] == 0].iloc[::signal_interval]
+
+    # Plot sampled Buy/Sell signals
+    plt.scatter(buy_signals.index, buy_signals["Close"], label="Buy Signal", marker="^", color="green", s=100)
+    plt.scatter(sell_signals.index, sell_signals["Close"], label="Sell/Hold Signal", marker="v", color="red", s=100)
+
+    plt.title("Stock Price with Buy/Sell Predictions")
+    plt.xlabel("Date")
+    plt.ylabel("Price")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
+
+
+
+# Run the stock prediction function, displays accuracy and shows results for last 5 signals
+result = predict_stock_movement("META")
+print("Accuracy META:", result["accuracy"])
+trade_signals = generate_trade_signals(result["predictions"])
+print("\nRecent Trade Signals:")
+print(trade_signals.tail(5))
+print("\n")
+result = predict_stock_movement("GOOGL")
+print("Accuracy GOOGL:", result["accuracy"])
+trade_signals = generate_trade_signals(result["predictions"])
+print("\nRecent Trade Signals:")
+print(trade_signals.tail(5))
+print("\n")
+result = predict_stock_movement("VZ")
+print("Accuracy VZ:", result["accuracy"])
+trade_signals = generate_trade_signals(result["predictions"])
+print("\nRecent Trade Signals:")
+print(trade_signals.tail(5))
+print("\n")
 result = predict_stock_movement("NFLX")
+print("Accuracy NFLX:", result["accuracy"])
+trade_signals = generate_trade_signals(result["predictions"])
+print("\nRecent Trade Signals:")
+print(trade_signals.tail(5))
 
-# Show results
-print("Accuracy:", result["accuracy"])
-print("Classification Report:")
-print(result["classification_report"])
+# Plot with less clutter: show only every 7th signal
+plot_predictions(result["predictions"], yf.Ticker("NFLX").history(period="max"), signal_interval=7)
+
+
+
+
+
+
+
 
