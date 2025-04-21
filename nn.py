@@ -21,12 +21,7 @@ df = df[df['Date'].astype(str) != 'Date']
 df['Date'] = pd.to_datetime(df['Date'], format='%Y-%m-%d', errors='coerce')
 df = df.dropna(subset=['Date'])  # drop rows with invalid dates
 
-target = 'GOOGL'
-cols = [f'Close_{target}', f'High_{target}', f'Low_{target}']
-df[cols] = df[cols].astype(float)
-df[f'Prev_Close'] = df[f'Close_{target}'].shift(1)
-df.dropna(inplace=True)
-
+# CHANGE THIS TO DIFFERENT TICKER COMPANIES (written in dataLoading.ipynb)
 target = 'GOOGL'
 cols = [f'Close_{target}', f'High_{target}', f'Low_{target}']
 df[cols] = df[cols].astype(float)
