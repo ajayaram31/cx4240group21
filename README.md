@@ -12,8 +12,9 @@ Change the target label on line 25 from 'GOOGL' to other targets listed in dataL
 
 # RANDOM FOREST
 Run StocksRandomForest.py
-Change the target label on line 69 to different targets in the dataframe (listed in dataLoading.ipynb) to see results for different companies' data. 
-The output appears in the terminal as a classification report. 
+Change the target label on line 100 to different targets in the dataframe (listed in dataLoading.ipynb) to see results for different companies' data. 
+The output will give you the accuracy of the model, and a table of the last 5 trading days. 
+To plot the model's predictions change the target label on line 125 to a different target in the dataframe.  
 
 # LOGSTIC REGRESSION
 Go to https://fred.stlouisfed.org/series/UNRATE and download a 10 year csv file for the unemployment rate. Name this file UNRATE.csv
