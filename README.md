@@ -12,6 +12,7 @@ Change the target label on line 25 from 'GOOGL' to other targets listed in dataL
 
 # RANDOM FOREST
 Run StocksRandomForest.py
+Change the target label on line 69 to different targets in the dataframe (listed in dataLoading.ipynb) to see results for different companies' data. 
 The output appears in the terminal as a classification report. 
 
 # LOGSTIC REGRESSION
@@ -19,4 +20,4 @@ Go to https://fred.stlouisfed.org/series/UNRATE and download a 10 year csv file 
 Run all three cells in logistic_regression.ipynb
 
 # LINEAR REGRESSION
-Run 
+Run CX4240 Final Project Linear Regression
